@@ -1,14 +1,13 @@
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Scanner;
 
 public class EncryptDecrypt {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
 
         int menuItem = showMenuAndMakeChoice();
 
@@ -28,7 +27,6 @@ public class EncryptDecrypt {
         } catch (IOException e) {
             System.out.println(e);
             System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
-            return;
         }
     }
 
@@ -57,7 +55,7 @@ public class EncryptDecrypt {
     public static boolean checkFileExpansionTxt(String fileNameAddress) {
 
         if (fileNameAddress.indexOf('.') != -1) {
-            return "txt".equals(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()).toLowerCase());
+            return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
         }
         return false;
     }
