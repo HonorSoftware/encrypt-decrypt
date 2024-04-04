@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -114,14 +114,24 @@ public class EncryptDecrypt {
         return null;
     }
 
-    public static void makeOperation(int menuItem, Path srcFile, Path dstFile) throws IOException {
+    public static <bufferedWriter> void makeOperation(int menuItem, Path srcFile, Path dstFile) throws IOException {
         List<String> srcFileStrings;
         if (menuItem == 1) {
             srcFileStrings = Files.readAllLines(srcFile);
             Files.write(dstFile, srcFileStrings, StandardOpenOption.APPEND);
         } else if (menuItem == 2) {
-            srcFileStrings = Files.readAllLines(srcFile);
-            Files.write(dstFile, srcFileStrings, StandardOpenOption.APPEND);
+            System.out.println(srcFile.toRealPath().toFile());
+            System.out.println(dstFile.toRealPath());
+            try (
+                    FileReader reader = new FileReader(srcFile.toRealPath().toFile());
+                    FileWriter writer = new FileWriter(dstFile.toRealPath().toFile())
+            ) {
+                while (reader.ready()) {
+                    int myCharInt = reader.read();
+                    System.out.println((char) myCharInt);
+                    writer.write(myCharInt);
+                }
+            }
         } else {
             return;
         }
