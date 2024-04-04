@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class EncryptDecrypt {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         int menuItem = showMenuAndMakeChoice();
 
@@ -120,7 +120,8 @@ public class EncryptDecrypt {
             srcFileStrings = Files.readAllLines(srcFile);
             Files.write(dstFile, srcFileStrings, StandardOpenOption.APPEND);
         } else if (menuItem == 2) {
-            return;
+            srcFileStrings = Files.readAllLines(srcFile);
+            Files.write(dstFile, srcFileStrings, StandardOpenOption.APPEND);
         } else {
             return;
         }
