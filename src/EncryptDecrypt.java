@@ -9,6 +9,7 @@ public class EncryptDecrypt {
 
     public static void main(String[] args) {
 
+
         int menuItem = showMenuAndMakeChoice();
 
         Path srcFile = receiveSrcFile(menuItem);
@@ -22,6 +23,7 @@ public class EncryptDecrypt {
             System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
             return;
         }
+
         try {
             makeOperation(menuItem, srcFile, dstFile);
         } catch (IOException e) {
@@ -34,26 +36,26 @@ public class EncryptDecrypt {
         System.out.println("Нажмите \"1\", чтобы выполнить действие \"Зашифровать файл с помощью ключа.\"");
         System.out.println("Нажмите \"2\", чтобы выполнить действие \"Расшифровать файл с помощью ключа.\"");
         System.out.println("Нажмите \"0\", чтобы выполнить действие \"Выйти.\"");
-        Scanner console = new Scanner(System.in);
         int choiceNumber = -1;
         boolean isCorrectChoice = false;
+        Scanner consoleForMenu = new Scanner(System.in);
         while (!isCorrectChoice) {
-            while (!console.hasNextInt()) {
+            while (!consoleForMenu.hasNextInt()) {
                 System.out.println("Введите целое число от 0 до 2");
-                console.next();
+                consoleForMenu.next();
             }
-            choiceNumber = console.nextInt();
+            choiceNumber = consoleForMenu.nextInt();
             if (choiceNumber == 0 || choiceNumber == 1 || choiceNumber == 2) {
                 isCorrectChoice = true;
             } else {
                 System.out.println("Введите целое число от 0 до 2");
             }
         }
+        //consoleForMenu.close(); -- тут непонятно, т.к. если раскомментировать, то строки для ввода адреса файла не работают (((
         return choiceNumber;
     }
 
     public static boolean checkFileExpansionTxt(String fileNameAddress) {
-
         if (fileNameAddress.indexOf('.') != -1) {
             return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
         }
@@ -66,12 +68,12 @@ public class EncryptDecrypt {
         } else if (number == 2) {
             System.out.println("Введите путь и имя файла для РАСШИФРОВКИ (файл д/б в формате TXT):");
         }
-        Scanner console = new Scanner(System.in);
+        Scanner consoleForSrc = new Scanner(System.in);
         String srcFileAddress = null;
-        Path srcFile;
+        Path srcFile = null;
         boolean isCorrectSrcString = false;
         while (!isCorrectSrcString) {
-            srcFileAddress = console.nextLine();
+            srcFileAddress = consoleForSrc.nextLine();
             if (srcFileAddress.equals("exit")) break;
             srcFile = Path.of(srcFileAddress);
             if ((Files.isRegularFile(srcFile)) && (Files.exists(srcFile)) && checkFileExpansionTxt(srcFileAddress)) {
@@ -81,7 +83,8 @@ public class EncryptDecrypt {
                 System.out.println("Введите корректные адрес и имя файла или \"exit\" для завершения работы");
             }
         }
-        return null;
+        consoleForSrc.close();
+        return srcFile;
     }
 
     public static Path receiveDstFile(int number) {
@@ -90,12 +93,12 @@ public class EncryptDecrypt {
         } else if (number == 2) {
             System.out.println("Введите путь и имя РАСШИФРОВАННОГО файла (файл д/б в формате TXT):");
         }
-        Scanner console = new Scanner(System.in);
+        Scanner consoleForDst = new Scanner(System.in);
         String dstFileAddress = null;
-        Path dstFile;
+        Path dstFile = null;
         boolean isCorrectDstString = false;
         while (!isCorrectDstString) {
-            dstFileAddress = console.nextLine();
+            dstFileAddress = consoleForDst.nextLine();
             if (dstFileAddress.equals("exit")) break;
             if (checkFileExpansionTxt(dstFileAddress)) {
                 dstFile = Path.of(dstFileAddress);
@@ -111,10 +114,11 @@ public class EncryptDecrypt {
                 System.out.println("Введите корректные адрес и имя файла или \"exit\" для завершения работы");
             }
         }
-        return null;
+        consoleForDst.close();
+        return dstFile;
     }
 
-    public static <bufferedWriter> void makeOperation(int menuItem, Path srcFile, Path dstFile) throws IOException {
+    public static void makeOperation(int menuItem, Path srcFile, Path dstFile) throws IOException {
         List<String> srcFileStrings;
         if (menuItem == 1) {
             srcFileStrings = Files.readAllLines(srcFile);
