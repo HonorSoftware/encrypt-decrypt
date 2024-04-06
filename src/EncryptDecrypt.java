@@ -2,30 +2,62 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EncryptDecrypt {
 
     public static void main(String[] args) {
 
+        final char[] ARRAY_ALPHABET = {'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з',
+                'и','к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
+                'ъ', 'ы', 'ь', 'э', 'я', '.', ',', '«', '»', '"', '\'', ':', '!', '?', ' '};
+
+        final HashMap<Character, Integer> MAP_ALPHABET = new HashMap<>();
+
+        for (int i = 0; i < ARRAY_ALPHABET.length; i++) {
+            MAP_ALPHABET.put(ARRAY_ALPHABET[i], i);
+        }
 
         int menuItem = showMenuAndMakeChoice();
 
-        Path srcFile = receiveSrcFile(menuItem);
-        if (srcFile == null) {
-            System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
+        Path srcFile = null;
+        try {
+            srcFile = receiveSrcFile(menuItem);
+            if (srcFile == null) {
+                System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
             return;
         }
 
-        Path dstFile = receiveDstFile(menuItem);
-        if (dstFile == null) {
-            System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
+        Path dstFile = null;
+        try {
+            dstFile = receiveDstFile(menuItem);
+            if (dstFile == null) {
+                System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+            System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
+            return;
+        }
+
+        int key = receiveKey(menuItem);
+
+        if (key == 0) {
+            System.out.println("Работа программы завершена некорректно, ключ не м/б равен 0, т.к. шифрования/расшифрования НЕ произойдет!");
             return;
         }
 
         try {
-            makeOperation(menuItem, srcFile, dstFile);
+            makeOperation(menuItem, srcFile, dstFile, ARRAY_ALPHABET, MAP_ALPHABET, key);
         } catch (IOException e) {
             System.out.println(e);
             System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
@@ -60,6 +92,27 @@ public class EncryptDecrypt {
             return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
         }
         return false;
+    }
+
+    public static int receiveKey(int number) {
+        if (number == 1) {
+            System.out.println("Введите ключ для ШИФРОВАНИЯ файла (любое целое число):");
+        } else if (number == 2) {
+            System.out.println("Введите ключ для РАСШИФРОВКИ файла (нужен ключ, который был использован ранее для шифрования файла):");
+        }
+        int keyNumber = 0;
+        boolean isCorrectKey = false;
+        Scanner consoleForKey = new Scanner(System.in);
+        while (!isCorrectKey) {
+            while (!consoleForKey.hasNextInt()) {
+                System.out.println("Введите целое число");
+                consoleForKey.next();
+            }
+            keyNumber = consoleForKey.nextInt();
+            return keyNumber;
+        }
+        consoleForKey.close();
+        return keyNumber;
     }
 
     public static Path receiveSrcFile(int number) {
@@ -118,26 +171,37 @@ public class EncryptDecrypt {
         return dstFile;
     }
 
-    public static void makeOperation(int menuItem, Path srcFile, Path dstFile) throws IOException {
-        List<String> srcFileStrings;
-        if (menuItem == 1) {
-            srcFileStrings = Files.readAllLines(srcFile);
-            Files.write(dstFile, srcFileStrings, StandardOpenOption.APPEND);
-        } else if (menuItem == 2) {
-            System.out.println(srcFile.toRealPath().toFile());
-            System.out.println(dstFile.toRealPath());
+    public static void makeOperation(int menuItem, Path srcFile, Path dstFile, char[] arrayAlphabet, HashMap<Character, Integer> mapAlphabet, int shift) throws IOException {
+        if ((menuItem == 1) || (menuItem == 2)) {
             try (
                     FileReader reader = new FileReader(srcFile.toRealPath().toFile());
                     FileWriter writer = new FileWriter(dstFile.toRealPath().toFile())
             ) {
                 while (reader.ready()) {
                     int myCharInt = reader.read();
-                    System.out.println((char) myCharInt);
-                    writer.write(myCharInt);
+                    if (!mapAlphabet.containsKey((char) myCharInt)) {
+                        writer.write((char) myCharInt);
+                    } else {
+                        //шифруем и записываем в выходной файл (расшифровка - это фактически шифрование, но с противоположным ключем)
+                        int currentPositionInArrayAlphabet = mapAlphabet.get((char) myCharInt);
+                        int positiveShift = receivePositiveShift(menuItem == 1 ? shift : (-1) * shift, arrayAlphabet.length);
+                        int newPositionInArrayAlphabet = receiveNewPositionInAlphabetArray(currentPositionInArrayAlphabet, positiveShift, arrayAlphabet.length);
+                        writer.write(arrayAlphabet[newPositionInArrayAlphabet]);
+                    }
                 }
             }
-        } else {
+        }
+        else {
             return;
         }
     }
+
+    public static int receivePositiveShift(int shift, int length) {
+        return shift >= 0 ? shift : length - Math.abs(shift) % length;
+    }
+
+    public static int receiveNewPositionInAlphabetArray(int currentPositionInArrayAlphabet, int shift, int length) {
+        return (currentPositionInArrayAlphabet + receivePositiveShift(shift, length)) % length;
+    }
+
 }
