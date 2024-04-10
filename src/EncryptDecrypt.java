@@ -14,7 +14,6 @@ public class EncryptDecrypt {
                 'и', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф', 'х', 'ц', 'ч', 'ш', 'щ',
                 'ъ', 'ы', 'ь', 'э', 'ю', 'я', '.', ',', '«', '»', '"', '\'', ':', '!', '?', ' ', '\n'};
 
-
         final HashMap<Character, Integer> MAP_ALPHABET = new HashMap<>();
 
         for (int i = 0; i < ARRAY_ALPHABET.length; i++) {
@@ -25,39 +24,28 @@ public class EncryptDecrypt {
 
         int[] countCorrectWordForKey = new int[ARRAY_ALPHABET.length];
 
-        int menuItem = showMenuAndMakeChoice();
+        int menuItem = 0;
 
         Path srcFile = null;
-        try {
-            srcFile = receiveSrcFile(menuItem);
-            if (srcFile == null) {
-                System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
-                return;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
-            return;
-        }
 
         Path dstFile = null;
-        try {
-            dstFile = receiveDstFile(menuItem);
-            if (dstFile == null) {
-                System.out.println("Работа программы завершена некорректно, ни один путь к файлу не может быть null");
-                return;
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-            System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
-            return;
-        }
 
         try {
+            menuItem = showMenuAndMakeChoice();
+            if (menuItem == 0) {
+                throw new Exception("Stop on menuItem");
+            }
+            srcFile = receiveSrcFile(menuItem);
+            if ((srcFile == null) || !Files.exists(srcFile)) {
+                throw new Exception("Stop on srcFile");
+            }
+            dstFile = receiveDstFile(menuItem);
+            if ((dstFile == null) || !Files.exists(dstFile)) {
+                throw new Exception("Stop on dstFile");
+            }
             makeOperation(menuItem, srcFile, dstFile, ARRAY_ALPHABET, MAP_ALPHABET, dictionary, countCorrectWordForKey);
-        } catch (IOException e) {
-            System.out.println(e);
-            System.out.println("Работа программы завершена некорректно, посмотрите лог работы");
+        } catch (Exception e) {
+            System.out.println("Работа программы завершена. Просмотрите лог.");
         }
     }
 
@@ -71,14 +59,14 @@ public class EncryptDecrypt {
         Scanner consoleForMenu = new Scanner(System.in);
         while (!isCorrectChoice) {
             while (!consoleForMenu.hasNextInt()) {
-                System.out.println("Введите целое число от 0 до 3");
+                System.out.println("Введите целое число от 0 до 3. 0 для выхода");
                 consoleForMenu.next();
             }
             choiceNumber = consoleForMenu.nextInt();
             if (choiceNumber == 0 || choiceNumber == 1 || choiceNumber == 2 || choiceNumber == 3) {
                 isCorrectChoice = true;
             } else {
-                System.out.println("Введите целое число от 0 до 3");
+                System.out.println("Введите целое число от 0 до 3. 0 для выхода");
             }
         }
         //consoleForMenu.close(); -- тут непонятно, т.к. если раскомментировать, то строки для ввода адреса файла не работают (((
@@ -210,7 +198,6 @@ public class EncryptDecrypt {
                 StringBuilder wordForCheck = new StringBuilder();
                 char tempChar = '^';
                 while (reader.ready()) {
-                    System.out.println();
                     int myCharInt = reader.read();
                     if (mapAlphabet.containsKey((char) myCharInt)) {
                         int currentPositionInArrayAlphabet = mapAlphabet.get((char) myCharInt);
@@ -321,6 +308,4 @@ public class EncryptDecrypt {
         }
         return indexForMax;
     }
-
-
 }
