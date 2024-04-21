@@ -6,8 +6,8 @@ public enum MainMenuItems {
 
     ;
 
-    private String nameItem;
-    private int numberItem;
+    private final String nameItem;
+    private final int numberItem;
 
     public String getNameItem() {
         return nameItem;
