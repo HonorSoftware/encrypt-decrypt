@@ -135,8 +135,7 @@ public class EncryptDecrypt2 {
         Scanner consoleForSrc = new Scanner(System.in);
         String srcFileAddress;
         Path srcFile;
-        //boolean isCorrectSrcString = false;
-        while (true/*!isCorrectSrcString*/) {
+        while (true) {
             srcFileAddress = consoleForSrc.nextLine();
             if (srcFileAddress.equals("exit")) finishByUser();
             srcFile = Path.of(srcFileAddress);
@@ -150,7 +149,7 @@ public class EncryptDecrypt2 {
 
     public static boolean checkFileExpansionTxt(String fileNameAddress) {
         if (fileNameAddress.indexOf('.') != -1) {
-            return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length() - 1));
+            return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
         }
         return false;
     }
@@ -271,6 +270,7 @@ public class EncryptDecrypt2 {
         } catch (Exception e) {
             finishEmergency();
         }
+        System.out.println("Ключ для расшифровки: " + findMaxIndexOfArray(countCorrectWordForKey));
     }
 
     public static Path receiveDictFile() {
@@ -285,7 +285,6 @@ public class EncryptDecrypt2 {
             }
             dictFile = Path.of(dictFileAddress);
             if ((Files.isRegularFile(dictFile)) && (Files.exists(dictFile)) && checkFileExpansionTxt(dictFileAddress)) {
-                //isCorrectDictString = true;
                 return dictFile;
             } else {
                 System.out.println("Введите корректные адрес и имя файла или \"exit\" для завершения работы");
