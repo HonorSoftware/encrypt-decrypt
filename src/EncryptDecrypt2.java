@@ -30,7 +30,7 @@ public class EncryptDecrypt2 {
 
     public static void showMainMenu() {
         for (MainMenuItems item: MainMenuItems.values()) {
-            System.out.println(item.getNameItem());
+            System.out.println(item.getMessageItem());
         }
     }
 
@@ -40,8 +40,8 @@ public class EncryptDecrypt2 {
         Scanner consoleForMenu = new Scanner(System.in);
         while (!isCorrectChoice) {
             while (!consoleForMenu.hasNextInt()) {
-                System.out.println("Введите, пожалуйста, целое число, а не набор странных символов");
-                System.out.println();
+                System.out.println("Введите, пожалуйста, целое число, а не набор странных символов\n");
+                //System.out.println();
                 showMainMenu();
                 consoleForMenu.next();
             }
@@ -49,8 +49,8 @@ public class EncryptDecrypt2 {
             if (isUserChoiceNumberCorrect(userChoiceNumber)) {
                 isCorrectChoice = true;
             } else {
-                System.out.println("Введите, пожалуйста, число от 0 до 3, а не какое-то другое");
-                System.out.println();
+                System.out.println("Введите, пожалуйста, число от 0 до 3, а не какое-то другое\n");
+                //System.out.println();
                 showMainMenu();
             }
         }
@@ -88,7 +88,7 @@ public class EncryptDecrypt2 {
     }
 
     public static void finishEmergency() {
-        System.exit(666);
+        System.exit(-1);
     }
 
     public static void makeEncryptOrDecryptWithKey(int userChoiceNumber) {
@@ -100,12 +100,13 @@ public class EncryptDecrypt2 {
                 FileWriter writer = new FileWriter(receiveDstFile(userChoiceNumber).toRealPath().toFile())
         ) {
             while (reader.ready()) {
-                int myCharInt = reader.read();
-                if (!MAP_ALPHABET.containsKey((char) myCharInt)) {
-                    writer.write((char) myCharInt);
+                //int myCharInt = reader.read();
+                char myChar = (char) reader.read();
+                if (!MAP_ALPHABET.containsKey(myChar)) {
+                    writer.write(myChar);
                 } else {
                     //шифруем и записываем в выходной файл (расшифровка - это фактически шифрование, но с противоположным ключем)
-                    int currentPositionInArrayAlphabet = MAP_ALPHABET.get((char) myCharInt);
+                    int currentPositionInArrayAlphabet = MAP_ALPHABET.get(myChar);
                     int positiveShift = receivePositiveShift(userChoiceNumber == MainMenuItems.ENCRYPT.getNumberItem() ? shift : (-1) * shift, ARRAY_ALPHABET.length);
                     int newPositionInArrayAlphabet = receiveNewPositionInAlphabetArray(currentPositionInArrayAlphabet, positiveShift, ARRAY_ALPHABET.length);
                     writer.write(ARRAY_ALPHABET[newPositionInArrayAlphabet]);
@@ -133,10 +134,10 @@ public class EncryptDecrypt2 {
             System.out.println("Введите путь и имя файла для РАСШИФРОВКИ в режиме брутфорс (файл д/б в формате TXT):");
         }
         Scanner consoleForSrc = new Scanner(System.in);
-        String srcFileAddress;
+        //String srcFileAddress;
         Path srcFile;
         while (true) {
-            srcFileAddress = consoleForSrc.nextLine();
+            String srcFileAddress = consoleForSrc.nextLine();
             if (srcFileAddress.equals("exit")) finishByUser();
             srcFile = Path.of(srcFileAddress);
             if ((Files.isRegularFile(srcFile)) && (Files.exists(srcFile)) && checkFileExpansionTxt(srcFileAddress)) {
@@ -149,7 +150,8 @@ public class EncryptDecrypt2 {
 
     public static boolean checkFileExpansionTxt(String fileNameAddress) {
         if (fileNameAddress.indexOf('.') != -1) {
-            return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
+            //return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
+            return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1));
         }
         return false;
     }
@@ -163,10 +165,10 @@ public class EncryptDecrypt2 {
             System.out.println("Введите путь и имя РАСШИФРОВАННОГО в режиме брутфорс файла (файл д/б в формате TXT):");
         }
         Scanner consoleForDst = new Scanner(System.in);
-        String dstFileAddress;
+        //String dstFileAddress;
         Path dstFile;
         while (true) {
-            dstFileAddress = consoleForDst.nextLine();
+            String dstFileAddress = consoleForDst.nextLine();
             if (dstFileAddress.equals("exit")) finishByUser();
             if (checkFileExpansionTxt(dstFileAddress)) {
                 dstFile = Path.of(dstFileAddress);
@@ -225,9 +227,10 @@ public class EncryptDecrypt2 {
                 StringBuilder wordForCheck = new StringBuilder();
                 char tempChar;
                 while (reader.ready()) {
-                    int myCharInt = reader.read();
-                    if (MAP_ALPHABET.containsKey((char) myCharInt)) {
-                        int currentPositionInArrayAlphabet = MAP_ALPHABET.get((char) myCharInt);
+                    //int myCharInt = reader.read();
+                    char myChar = (char) reader.read();
+                    if (MAP_ALPHABET.containsKey(myChar)) {
+                        int currentPositionInArrayAlphabet = MAP_ALPHABET.get(myChar);
                         int newPositionInArrayAlphabet = receiveNewPositionInAlphabetArray(currentPositionInArrayAlphabet, key, ARRAY_ALPHABET.length);
                         tempChar = ARRAY_ALPHABET[newPositionInArrayAlphabet];
                         if (Character.isLetter(tempChar)) {
@@ -258,11 +261,12 @@ public class EncryptDecrypt2 {
                 FileWriter writer = new FileWriter(dstFile.toRealPath().toFile())
         ) {
             while (reader.ready()) {
-                int myCharInt = reader.read();
-                if (!MAP_ALPHABET.containsKey((char) myCharInt)) {
-                    writer.write((char) myCharInt);
+                //int myCharInt = reader.read();
+                char myChar = (char) reader.read();
+                if (!MAP_ALPHABET.containsKey(myChar)) {
+                    writer.write(myChar);
                 } else {
-                    int currentPositionInArrayAlphabet = MAP_ALPHABET.get((char) myCharInt);
+                    int currentPositionInArrayAlphabet = MAP_ALPHABET.get(myChar);
                     int newPositionInArrayAlphabet = receiveNewPositionInAlphabetArray(currentPositionInArrayAlphabet, findMaxIndexOfArray(countCorrectWordForKey), ARRAY_ALPHABET.length);
                     writer.write(ARRAY_ALPHABET[newPositionInArrayAlphabet]);
                 }
@@ -276,10 +280,10 @@ public class EncryptDecrypt2 {
     public static Path receiveDictFile() {
         System.out.println("Введите путь и имя файла СЛОВАРЯ (файл д/б в формате TXT):");
         Scanner consoleForDict = new Scanner(System.in);
-        String dictFileAddress;
+        //String dictFileAddress;
         Path dictFile;
         while (true) {
-            dictFileAddress = consoleForDict.nextLine();
+            String dictFileAddress = consoleForDict.nextLine();
             if (dictFileAddress.equals("exit")) {
                 finishByUser();
             }
@@ -292,10 +296,8 @@ public class EncryptDecrypt2 {
         }
     }
 
-    public static void receiveDict(Path file, HashSet dict) {
-        try (
-                BufferedReader reader = new BufferedReader(new FileReader(file.toRealPath().toFile()))
-        ) {
+    public static void receiveDict(Path file, HashSet<String> dict) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file.toRealPath().toFile()))) {
             while (reader.ready()) {
                 dict.add(reader.readLine());
             }

@@ -6,19 +6,19 @@ public enum MainMenuItems {
 
     ;
 
-    private final String nameItem;
+    private final String messageItem;
     private final int numberItem;
 
-    public String getNameItem() {
-        return nameItem;
+    public String getMessageItem() {
+        return messageItem;
     }
 
     public int getNumberItem() {
         return numberItem;
     }
 
-    MainMenuItems(String nameItem, int numberItem) {
-        this.nameItem = nameItem;
+    MainMenuItems(String messageItem, int numberItem) {
+        this.messageItem = messageItem;
         this.numberItem = numberItem;
     }
 
