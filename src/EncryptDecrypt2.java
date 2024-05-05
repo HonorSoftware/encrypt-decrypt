@@ -76,20 +76,19 @@ public class EncryptDecrypt2 {
         return null;
     }
 
-    public static void makeOperation (int userChoiceNumber) {
+    public static void makeOperation(int userChoiceNumber) {
 
         MainMenuItems userChoice = findMenuItem(userChoiceNumber);
 
+        if (userChoice == null) finishEmergency();
+
         switch (userChoice) {
-            case ENCRYPT, DECRYPT -> {
-                makeEncryptOrDecryptWithKey(userChoiceNumber);
-            }
-            case DECRYPT_BF -> {
-                makeBrutForceDecryptWithoutKey(userChoiceNumber);
-            }
-            case EXIT -> {
-                finishByUser();
-            }
+            case ENCRYPT, DECRYPT -> makeEncryptOrDecryptWithKey(userChoiceNumber);
+
+            case DECRYPT_BF -> makeBrutForceDecryptWithoutKey(userChoiceNumber);
+
+            case EXIT -> finishByUser();
+
             default -> finishEmergency();
         }
     }
