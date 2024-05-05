@@ -6,6 +6,14 @@ public enum MainMenuItems {
 
     ;
 
+    @Override
+    public String toString() {
+        return "MainMenuItems{" +
+                "messageItem='" + messageItem + '\'' +
+                ", numberItem=" + numberItem +
+                '}';
+    }
+
     private final String messageItem;
     private final int numberItem;
 

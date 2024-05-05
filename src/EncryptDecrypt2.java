@@ -67,20 +67,31 @@ public class EncryptDecrypt2 {
         return false;
     }
 
+    static MainMenuItems findMenuItem(int number) {
+        for (MainMenuItems item: MainMenuItems.values()) {
+            if (item.getNumberItem() == number) {
+                return item;
+            }
+        }
+        return null;
+    }
+
     public static void makeOperation (int userChoiceNumber) {
 
-        if (userChoiceNumber == MainMenuItems.ENCRYPT.getNumberItem()) {
-            makeEncryptOrDecryptWithKey(userChoiceNumber);
-        } else if (userChoiceNumber == MainMenuItems.DECRYPT.getNumberItem()) {
-            makeEncryptOrDecryptWithKey(userChoiceNumber);
-        } else if (userChoiceNumber == MainMenuItems.DECRYPT_BF.getNumberItem()) {
-            makeBrutForceDecryptWithoutKey(userChoiceNumber);
-        } else if (userChoiceNumber == MainMenuItems.EXIT.getNumberItem()) {
-            finishByUser();
-        } else {
-            finishEmergency();
-        }
+        MainMenuItems userChoice = findMenuItem(userChoiceNumber);
 
+        switch (userChoice) {
+            case ENCRYPT, DECRYPT -> {
+                makeEncryptOrDecryptWithKey(userChoiceNumber);
+            }
+            case DECRYPT_BF -> {
+                makeBrutForceDecryptWithoutKey(userChoiceNumber);
+            }
+            case EXIT -> {
+                finishByUser();
+            }
+            default -> finishEmergency();
+        }
     }
 
     public static void finishByUser() {
