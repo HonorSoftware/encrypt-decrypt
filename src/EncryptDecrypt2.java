@@ -29,7 +29,7 @@ public class EncryptDecrypt2 {
     }
 
     public static void showMainMenu() {
-        for (MainMenuItems item: MainMenuItems.values()) {
+        for (MainMenuItems item : MainMenuItems.values()) {
             System.out.println(item.getMessageItem());
         }
     }
@@ -68,7 +68,7 @@ public class EncryptDecrypt2 {
     }
 
     static MainMenuItems findMenuItem(int number) {
-        for (MainMenuItems item: MainMenuItems.values()) {
+        for (MainMenuItems item : MainMenuItems.values()) {
             if (item.getNumberItem() == number) {
                 return item;
             }
@@ -135,14 +135,34 @@ public class EncryptDecrypt2 {
         return (currentPositionInArrayAlphabet + receivePositiveShift(shift, length)) % length;
     }
 
-    public static Path receiveSrcFile(int number) {
-        if (number == 1) {
-            System.out.println("Введите путь и имя файла для ШИФРОВАНИЯ (файл д/б в формате TXT):");
-        } else if (number == 2) {
-            System.out.println("Введите путь и имя файла для РАСШИФРОВКИ (файл д/б в формате TXT):");
-        } else if (number == 3) {
-            System.out.println("Введите путь и имя файла для РАСШИФРОВКИ в режиме брутфорс (файл д/б в формате TXT):");
+    public static String getMessageForSrcFile(int userChoiceNumber) {
+
+        MainMenuItems userChoice = findMenuItem(userChoiceNumber);
+        if (userChoice == null) finishEmergency();
+        switch (userChoice) {
+            case ENCRYPT -> {
+                return MainMenuItems.ENCRYPT.getMessageForReceiveSrcFile();
+            }
+            case DECRYPT -> {
+                return MainMenuItems.DECRYPT.getMessageForReceiveSrcFile();
+            }
+            case DECRYPT_BF -> {
+                return MainMenuItems.DECRYPT_BF.getMessageForReceiveSrcFile();
+            }
+            default -> {
+                return null;
+            }
         }
+    }
+
+
+    public static Path receiveSrcFile(int userChoiceNumber) {
+
+        if (getMessageForSrcFile(userChoiceNumber) != null)
+            System.out.println(getMessageForSrcFile(userChoiceNumber));
+        else
+            finishEmergency();
+
         Scanner consoleForSrc = new Scanner(System.in);
         //String srcFileAddress;
         Path srcFile;
@@ -150,30 +170,47 @@ public class EncryptDecrypt2 {
             String srcFileAddress = consoleForSrc.nextLine();
             if (srcFileAddress.equals("exit")) finishByUser();
             srcFile = Path.of(srcFileAddress);
-            if ((Files.isRegularFile(srcFile)) && (Files.exists(srcFile)) && checkFileExpansionTxt(srcFileAddress)) {
+            if ((Files.isRegularFile(srcFile)) && (Files.exists(srcFile)) && checkFileExpansionTxt(srcFileAddress))
                 return srcFile;
-            } else {
+            else
                 System.out.println("Введите корректные адрес и имя файла или \"exit\" для завершения работы");
-            }
         }
     }
 
     public static boolean checkFileExpansionTxt(String fileNameAddress) {
-        if (fileNameAddress.indexOf('.') != -1) {
+        if (fileNameAddress.indexOf('.') != -1)
             //return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1, fileNameAddress.length()));
             return "txt".equalsIgnoreCase(fileNameAddress.substring(fileNameAddress.indexOf('.') + 1));
-        }
         return false;
     }
 
-    public static Path receiveDstFile(int number) {
-        if (number == 1) {
-            System.out.println("Введите путь и имя ЗАШИФРОВАННОГО файла (файл д/б в формате TXT):");
-        } else if (number == 2) {
-            System.out.println("Введите путь и имя РАСШИФРОВАННОГО файла (файл д/б в формате TXT):");
-        } else if (number == 3) {
-            System.out.println("Введите путь и имя РАСШИФРОВАННОГО в режиме брутфорс файла (файл д/б в формате TXT):");
+    public static String getMessageForDstFile(int userChoiceNumber) {
+
+        MainMenuItems userChoice = findMenuItem(userChoiceNumber);
+        if (userChoice == null) finishEmergency();
+        switch (userChoice) {
+            case ENCRYPT -> {
+                return MainMenuItems.ENCRYPT.getMessageForReceiveDstFile();
+            }
+            case DECRYPT -> {
+                return MainMenuItems.DECRYPT.getMessageForReceiveDstFile();
+            }
+            case DECRYPT_BF -> {
+                return MainMenuItems.DECRYPT_BF.getMessageForReceiveDstFile();
+            }
+            default -> {
+                return null;
+            }
         }
+    }
+
+    public static Path receiveDstFile(int userChoiceNumber) {
+
+        if (getMessageForSrcFile(userChoiceNumber) != null)
+            System.out.println(getMessageForDstFile(userChoiceNumber));
+        else
+            finishEmergency();
+
         Scanner consoleForDst = new Scanner(System.in);
         //String dstFileAddress;
         Path dstFile;
@@ -214,11 +251,11 @@ public class EncryptDecrypt2 {
 
     public static int receiveKey(int userChoiceNumber) {
 
-        if (getMessageForReceiveKey(userChoiceNumber) != null) {
+        if (getMessageForReceiveKey(userChoiceNumber) != null)
             System.out.println(getMessageForReceiveKey(userChoiceNumber));
-        } else {
+        else
             finishEmergency();
-        }
+
 
         int keyNumber;
         Scanner consoleForKey = new Scanner(System.in);
@@ -228,11 +265,10 @@ public class EncryptDecrypt2 {
                 consoleForKey.next();
             }
             keyNumber = consoleForKey.nextInt();
-            if (keyNumber == 0) {
+            if (keyNumber == 0)
                 finishByUser();
-            } else {
+            else
                 break;
-            }
         }
         return keyNumber;
     }
@@ -291,9 +327,9 @@ public class EncryptDecrypt2 {
             while (reader.ready()) {
                 //int myCharInt = reader.read();
                 char myChar = (char) reader.read();
-                if (!MAP_ALPHABET.containsKey(myChar)) {
+                if (!MAP_ALPHABET.containsKey(myChar))
                     writer.write(myChar);
-                } else {
+                else {
                     int currentPositionInArrayAlphabet = MAP_ALPHABET.get(myChar);
                     int newPositionInArrayAlphabet = receiveNewPositionInAlphabetArray(currentPositionInArrayAlphabet, findMaxIndexOfArray(countCorrectWordForKey), ARRAY_ALPHABET.length);
                     writer.write(ARRAY_ALPHABET[newPositionInArrayAlphabet]);
@@ -312,15 +348,13 @@ public class EncryptDecrypt2 {
         Path dictFile;
         while (true) {
             String dictFileAddress = consoleForDict.nextLine();
-            if (dictFileAddress.equals("exit")) {
+            if (dictFileAddress.equals("exit"))
                 finishByUser();
-            }
             dictFile = Path.of(dictFileAddress);
-            if ((Files.isRegularFile(dictFile)) && (Files.exists(dictFile)) && checkFileExpansionTxt(dictFileAddress)) {
+            if ((Files.isRegularFile(dictFile)) && (Files.exists(dictFile)) && checkFileExpansionTxt(dictFileAddress))
                 return dictFile;
-            } else {
+            else
                 System.out.println("Введите корректные адрес и имя файла или \"exit\" для завершения работы");
-            }
         }
     }
 
