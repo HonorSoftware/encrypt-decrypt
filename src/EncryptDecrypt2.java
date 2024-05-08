@@ -194,14 +194,32 @@ public class EncryptDecrypt2 {
         }
     }
 
-    public static int receiveKey(int number) {
-        if (number == 1) {
-            System.out.println("Введите ключ для ШИФРОВАНИЯ файла (любое целое число, кроме 0). Или 0 для выхода");
-        } else if (number == 2) {
-            System.out.println("Введите ключ для РАСШИФРОВКИ файла (нужен ключ, который был использован ранее для шифрования файла)");
+
+    public static String getMessageForReceiveKey(int userChoiceNumber) {
+
+        MainMenuItems userChoice = findMenuItem(userChoiceNumber);
+        if (userChoice == null) finishEmergency();
+        switch (userChoice) {
+            case ENCRYPT -> {
+                return MainMenuItems.ENCRYPT.getMessageForKeyItem();
+            }
+            case DECRYPT -> {
+                return MainMenuItems.DECRYPT.getMessageForKeyItem();
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+    public static int receiveKey(int userChoiceNumber) {
+
+        if (getMessageForReceiveKey(userChoiceNumber) != null) {
+            System.out.println(getMessageForReceiveKey(userChoiceNumber));
         } else {
             finishEmergency();
         }
+
         int keyNumber;
         Scanner consoleForKey = new Scanner(System.in);
         while (true) {
